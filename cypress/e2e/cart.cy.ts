@@ -1,4 +1,3 @@
-import LoginPage from '../pages/LoginPage';
 import InventoryPage from '../pages/InventoryPage';
 import CartPage from '../pages/CartPage';
 
@@ -7,7 +6,6 @@ describe('Cart', () => {
   beforeEach(() => {
     cy.fixture('users').then((users) => {
       cy.loginBySession(users.standard.username, users.standard.password);
-      cy.visit('/inventory');
       InventoryPage.assertLoaded();
     });
   });

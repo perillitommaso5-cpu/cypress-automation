@@ -27,7 +27,6 @@ describe('Accessibility (WCAG 2.1 AA)', () => {
     beforeEach(() => {
       cy.fixture('users').then((users) => {
         cy.loginBySession(users.standard.username, users.standard.password);
-        cy.visit('/inventory');
         InventoryPage.assertLoaded();
       });
     });
@@ -56,7 +55,7 @@ describe('Accessibility (WCAG 2.1 AA)', () => {
     beforeEach(() => {
       cy.fixture('users').then((users) => {
         cy.loginBySession(users.standard.username, users.standard.password);
-        cy.visit('/inventory');
+        InventoryPage.assertLoaded();
         InventoryPage.addFirstItemToCart();
         InventoryPage.goToCart();
         CartPage.goToCheckout();

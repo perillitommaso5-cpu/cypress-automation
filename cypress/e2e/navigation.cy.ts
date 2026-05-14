@@ -6,7 +6,6 @@ describe('Navigation & UX', () => {
   beforeEach(() => {
     cy.fixture('users').then((users) => {
       cy.loginBySession(users.standard.username, users.standard.password);
-      cy.visit('/inventory');
       InventoryPage.assertLoaded();
     });
   });
@@ -23,7 +22,7 @@ describe('Navigation & UX', () => {
       cy.get('.bm-menu-wrap').should('not.be.visible');
     });
 
-    it('"About" reindirizza al sito Sauce Labs (nuova tab o redirect)', () => {
+    it('"About" reindirizza al sito Sauce Labs', () => {
       cy.get('#react-burger-menu-btn').click();
       cy.get('#about_sidebar_link').should('have.attr', 'href').and('include', 'saucelabs.com');
     });

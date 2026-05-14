@@ -7,7 +7,6 @@ describe('Checkout', () => {
   beforeEach(() => {
     cy.fixture('users').then((users) => {
       cy.loginBySession(users.standard.username, users.standard.password);
-      cy.visit('/inventory');
       InventoryPage.assertLoaded();
       InventoryPage.addFirstItemToCart();
       InventoryPage.goToCart();

@@ -7,7 +7,6 @@ describe('Visual & DOM Integrity', () => {
     beforeEach(() => {
       cy.fixture('users').then((users) => {
         cy.loginBySession(users.standard.username, users.standard.password);
-        cy.visit('/inventory');
         InventoryPage.assertLoaded();
       });
     });
@@ -32,9 +31,7 @@ describe('Visual & DOM Integrity', () => {
     it('problem_user vede immagini rotte — comportamento documentato', () => {
       cy.fixture('users').then((users) => {
         cy.loginBySession(users.problem.username, users.problem.password);
-        cy.visit('/inventory');
         InventoryPage.assertLoaded();
-
         let brokenCount = 0;
         cy.get('.inventory_item img').each(($img) => {
           const naturalWidth = ($img[0] as HTMLImageElement).naturalWidth;
@@ -52,7 +49,6 @@ describe('Visual & DOM Integrity', () => {
       cy.viewport(375, 812);
       cy.fixture('users').then((users) => {
         cy.loginBySession(users.standard.username, users.standard.password);
-        cy.visit('/inventory');
         InventoryPage.assertLoaded();
       });
     });

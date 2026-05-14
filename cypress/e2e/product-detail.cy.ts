@@ -6,7 +6,6 @@ describe('Product Detail', () => {
   beforeEach(() => {
     cy.fixture('users').then((users) => {
       cy.loginBySession(users.standard.username, users.standard.password);
-      cy.visit('/inventory');
       InventoryPage.assertLoaded();
     });
   });

@@ -7,7 +7,6 @@ describe('Session & Auth Guard', () => {
     it('ricaricare la pagina da autenticato mantiene la sessione', () => {
       cy.fixture('users').then((users) => {
         cy.loginBySession(users.standard.username, users.standard.password);
-        cy.visit('/inventory');
         InventoryPage.assertLoaded();
         cy.reload();
         InventoryPage.assertLoaded();
@@ -17,7 +16,6 @@ describe('Session & Auth Guard', () => {
     it('il localStorage contiene il token di sessione dopo il login', () => {
       cy.fixture('users').then((users) => {
         cy.loginBySession(users.standard.username, users.standard.password);
-        cy.visit('/inventory');
         InventoryPage.assertLoaded();
         cy.getAllLocalStorage().then((storage) => {
           const siteStorage = storage[Cypress.config('baseUrl') as string];
@@ -63,7 +61,6 @@ describe('Session & Auth Guard', () => {
     it('cy.loginBySession riusa la sessione senza re-eseguire il flusso UI', () => {
       cy.fixture('users').then((users) => {
         cy.loginBySession(users.standard.username, users.standard.password);
-        cy.visit('/inventory');
         InventoryPage.assertLoaded();
       });
     });
