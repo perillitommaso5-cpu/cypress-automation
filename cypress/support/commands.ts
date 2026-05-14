@@ -14,9 +14,9 @@ Cypress.Commands.add('login', (username: string, password: string) => {
 
 /**
  * cy.loginBySession(username, password)
- * Fast login using cy.session() — caches authenticated cookies.
- * validate() confirms the session is still valid before reusing it.
- * After calling this, use cy.visit('/') or navigate via UI — not cy.visit('/inventory').
+ * Fast login using cy.session() — caches authenticated cookies/localStorage.
+ * validate() checks the URL instead of localStorage to avoid Cypress context issues.
+ * After this command the browser is already on /inventory.
  */
 Cypress.Commands.add('loginBySession', (username: string, password: string) => {
   cy.session(
@@ -30,23 +30,14 @@ Cypress.Commands.add('loginBySession', (username: string, password: string) => {
     },
     {
       validate() {
-        // SauceDemo persiste la sessione via localStorage
-        cy.wrap(window.localStorage.getItem('session-username')).should('not.be.null');
+        // Visit '/' — SauceDemo redirects to /inventory if session is valid,
+        // stays on login page if not. This is the only reliable check.
+        cy.visit('/');
+        cy.url().should('include', '/inventory');
       },
       cacheAcrossSpecs: false,
     }
   );
-  // Dopo cy.session() naviga sempre da '/' — SauceDemo non serve route dirette
-  cy.visit('/');
-  cy.url().then((url) => {
-    // Se session valida, SauceDemo fa redirect automatico a /inventory
-    if (!url.includes('/inventory')) {
-      cy.get('#user-name').type(username);
-      cy.get('#password').type(password);
-      cy.get('#login-button').click();
-      cy.url().should('include', '/inventory');
-    }
-  });
 });
 
 declare global {
