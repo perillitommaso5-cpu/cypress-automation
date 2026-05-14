@@ -36,10 +36,20 @@ class CheckoutPage {
     cy.get(this.completeHeader).should('be.visible');
   }
 
+  /**
+   * Fills the checkout form.
+   * Skips cy.type() for empty strings — passing '' leaves the field blank
+   * without triggering the "cannot accept an empty string" Cypress error.
+   */
   fillForm(firstName: string, lastName: string, zip: string): void {
-    cy.get(this.firstNameInput).clear().type(firstName);
-    cy.get(this.lastNameInput).clear().type(lastName);
-    cy.get(this.zipInput).clear().type(zip);
+    cy.get(this.firstNameInput).clear();
+    if (firstName) cy.get(this.firstNameInput).type(firstName);
+
+    cy.get(this.lastNameInput).clear();
+    if (lastName) cy.get(this.lastNameInput).type(lastName);
+
+    cy.get(this.zipInput).clear();
+    if (zip) cy.get(this.zipInput).type(zip);
   }
 
   continue(): void {
