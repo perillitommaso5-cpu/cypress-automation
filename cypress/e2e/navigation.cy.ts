@@ -52,6 +52,10 @@ describe('Navigation & UX', () => {
       cy.get('#react-burger-menu-btn').click();
       cy.get('#reset_sidebar_link').click();
       cy.get('#react-burger-cross-btn').click();
+      // SauceDemo non aggiorna il DOM in modo reattivo dopo il reset:
+      // un reload esplicito garantisce che i bottoni tornino allo stato iniziale.
+      cy.reload();
+      InventoryPage.assertLoaded();
       cy.get('[data-test^="add-to-cart"]').should('have.length', 6);
     });
   });
