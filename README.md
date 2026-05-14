@@ -10,9 +10,9 @@
 |---|---|---|
 | [Cypress](https://www.cypress.io/) | v13 | E2E test framework |
 | TypeScript | v5 strict | Language |
-| GitHub Actions | — | CI — Chrome headless on ogni push |
+| GitHub Actions | — | CI — Chrome headless on every push |
 
-**Target app:** [SauceDemo](https://www.saucedemo.com) — demo e-commerce
+**Target app:** [SauceDemo](https://www.saucedemo.com) — demo e-commerce application
 
 ---
 
@@ -21,15 +21,15 @@
 ```
 cypress/
 ├── e2e/                        # Test specs
-│   ├── login.cy.ts              # Login — 11 scenari
-│   ├── inventory.cy.ts          # Catalogo prodotti — 8 scenari
-│   ├── cart.cy.ts               # Carrello — 8 scenari
-│   ├── checkout.cy.ts           # Checkout — 10 scenari
-│   ├── product-detail.cy.ts     # Dettaglio prodotto — 7 scenari
-│   └── navigation.cy.ts         # Navigation & UX — 6 scenari
+│   ├── login.cy.ts              # Login — 11 scenarios
+│   ├── inventory.cy.ts          # Product catalogue — 8 scenarios
+│   ├── cart.cy.ts               # Shopping cart — 8 scenarios
+│   ├── checkout.cy.ts           # Checkout — 10 scenarios
+│   ├── product-detail.cy.ts     # Product detail — 7 scenarios
+│   └── navigation.cy.ts         # Navigation & UX — 6 scenarios
 ├── fixtures/
-│   ├── users.json               # Credenziali utenti SauceDemo
-│   └── checkout.json            # Dati form checkout
+│   ├── users.json               # SauceDemo user credentials
+│   └── checkout.json            # Checkout form data
 ├── pages/                       # Page Object Model
 │   ├── LoginPage.ts
 │   ├── InventoryPage.ts
@@ -46,20 +46,20 @@ cypress/
 ## Getting Started
 
 ```bash
-# Clona il repository
+# Clone the repository
 git clone https://github.com/perillitommaso5-cpu/cypress-automation.git
 cd cypress-automation
 
-# Installa le dipendenze
+# Install dependencies
 npm install
 
-# Apri Cypress Test Runner (modalità interattiva)
+# Open Cypress Test Runner (interactive mode)
 npm run cy:open
 
-# Esegui tutti i test in headless
+# Run all tests headless
 npm run cy:run
 
-# Esegui su Chrome specificamente
+# Run specifically on Chrome
 npm run cy:run:chrome
 ```
 
@@ -67,62 +67,62 @@ npm run cy:run:chrome
 
 ## Test Coverage
 
-| Suite | Scenari | Descrizione |
+| Suite | Scenarios | Description |
 |---|---|---|
-| **Login** | 11 | Utenti validi, credenziali errate, campi vuoti, UX errori, logout |
-| **Inventory** | 8 | Lista prodotti, sorting A→Z/Z→A/prezzo, aggiunta/rimozione carrello, navigazione dettaglio |
-| **Cart** | 8 | Aggiunta singola/multipla, rimozione, carrello vuoto, navigazione |
-| **Checkout** | 10 | Validazione form (4 scenari), flusso completo, verifica totale matematico, cancel |
-| **Product Detail** | 7 | Contenuto pagina, aggiunta/rimozione carrello, cambio bottone, back navigation |
+| **Login** | 11 | Valid users, wrong credentials, empty fields, error UX, logout |
+| **Inventory** | 8 | Product list, sorting A→Z/Z→A/price, add/remove from cart, detail navigation |
+| **Cart** | 8 | Single/multiple add, removal, empty cart, navigation |
+| **Checkout** | 10 | Form validation (4 scenarios), full flow, mathematical total check, cancel |
+| **Product Detail** | 7 | Page content, add/remove from cart, button state change, back navigation |
 | **Navigation & UX** | 6 | Hamburger menu, logout, reset app state |
 
-**Totale: 50 scenari** su 6 suite
+**Total: 50 scenarios** across 6 suites
 
 ---
 
-## Architettura
+## Architecture
 
 ### Page Object Model (POM)
 
-Ogni pagina ha la sua classe con selettori privati e metodi pubblici. I test non accedono mai ai selettori direttamente — se l'app cambia un attributo, si aggiorna solo il POM.
+Each page has its own class with private selectors and public methods. Tests never access selectors directly — if the app changes an attribute, only the POM needs updating.
 
 ```typescript
-// I test usano metodi semantici
+// Tests use semantic methods
 LoginPage.login(users.standard.username, users.standard.password);
 InventoryPage.assertLoaded();
 InventoryPage.addFirstItemToCart();
 
-// Non selettori raw
-cy.get('#user-name').type(...)  // ✗ mai nei test
+// Not raw selectors
+cy.get('#user-name').type(...)  // ✗ never in tests
 ```
 
 ### Custom Commands
 
-| Command | Descrizione |
+| Command | Description |
 |---|---|
-| `cy.login(user, pass)` | Login completo via UI — visita `/`, compila le credenziali, clicca il bottone |
+| `cy.login(user, pass)` | Full UI login — visits `/`, fills credentials, clicks the button |
 
 ### Fixtures
 
-Tutti i dati di test sono separati dalla logica:
+All test data is kept separate from logic:
 
-- `users.json` — credenziali dei 5 utenti SauceDemo
-- `checkout.json` — dati del form di checkout
+- `users.json` — credentials for all 5 SauceDemo users
+- `checkout.json` — checkout form data
 
-### Note implementative
+### Implementation Notes
 
 **`navigation.cy.ts` — Reset App State**
-SauceDemo gestisce il reset tramite `localStorage` ma non aggiorna il DOM in modo reattivo: i bottoni `Remove` rimangono visibili finché la pagina non viene ricaricata. Il test che verifica il ritorno dei bottoni `Add to cart` esegue un `cy.reload()` esplicito dopo la chiusura del menu, seguito da `assertLoaded()` per attendere la stabilità della pagina prima dell'asserzione finale.
+SauceDemo handles reset via `localStorage` but does not reactively update the DOM: `Remove` buttons remain visible until the page is reloaded. The test that verifies the `Add to cart` buttons are restored performs an explicit `cy.reload()` after closing the menu, followed by `assertLoaded()` to wait for page stability before the final assertion.
 
 ---
 
 ## CI/CD
 
-Ogni push su `main` e ogni Pull Request triggerano la suite completa su GitHub Actions:
+Every push to `main` and every Pull Request triggers the full suite on GitHub Actions:
 
 - Runner: `ubuntu-latest`
 - Browser: Chrome headless
-- In caso di fallimento: screenshot automaticamente caricati come artifact
+- On failure: screenshots automatically uploaded as artifacts
 
 ```yaml
 # .github/workflows/cypress.yml
