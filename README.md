@@ -10,10 +10,7 @@
 |---|---|---|
 | [Cypress](https://www.cypress.io/) | v13 | E2E test framework |
 | TypeScript | v5 strict | Language |
-| cypress-axe | v1.5 | WCAG accessibility audits |
-| cypress-real-events | v1.13 | Real browser keyboard/mouse events |
-| axe-core | v4.9 | Accessibility rules engine |
-| GitHub Actions | — | CI — Chrome headless on every push |
+| GitHub Actions | — | CI — Chrome headless on ogni push |
 
 **Target app:** [SauceDemo](https://www.saucedemo.com) — demo e-commerce
 
@@ -29,17 +26,10 @@ cypress/
 │   ├── cart.cy.ts               # Carrello — 8 scenari
 │   ├── checkout.cy.ts           # Checkout — 10 scenari
 │   ├── product-detail.cy.ts     # Dettaglio prodotto — 7 scenari
-│   ├── navigation.cy.ts         # Navigation & UX — 6 scenari
-│   ├── api-intercept.cy.ts      # API Intercept — 6 scenari
-│   ├── visual-dom.cy.ts         # Visual & DOM integrity — 7 scenari
-│   ├── accessibility.cy.ts      # Accessibility WCAG 2.1 AA — 4 scenari
-│   ├── session.cy.ts            # Session & Auth Guard — 6 scenari
-│   ├── performance.cy.ts        # Performance & cy.clock() — 5 scenari
-│   └── keyboard-navigation.cy.ts # Keyboard navigation — 4 scenari
+│   └── navigation.cy.ts         # Navigation & UX — 6 scenari
 ├── fixtures/
 │   ├── users.json               # Credenziali utenti SauceDemo
-│   ├── checkout.json            # Dati form checkout
-│   └── placeholder.png          # Immagine stub per test intercept
+│   └── checkout.json            # Dati form checkout
 ├── pages/                       # Page Object Model
 │   ├── LoginPage.ts
 │   ├── InventoryPage.ts
@@ -47,8 +37,8 @@ cypress/
 │   ├── CheckoutPage.ts
 │   └── ProductDetailPage.ts
 └── support/
-    ├── commands.ts              # Custom commands: cy.login(), cy.loginBySession()
-    └── e2e.ts                   # Global support — importa commands + cypress-axe
+    ├── commands.ts              # Custom command: cy.login()
+    └── e2e.ts                   # Global support
 ```
 
 ---
@@ -77,8 +67,6 @@ npm run cy:run:chrome
 
 ## Test Coverage
 
-### Funzionale
-
 | Suite | Scenari | Descrizione |
 |---|---|---|
 | **Login** | 11 | Utenti validi, credenziali errate, campi vuoti, UX errori, logout |
@@ -88,18 +76,7 @@ npm run cy:run:chrome
 | **Product Detail** | 7 | Contenuto pagina, aggiunta/rimozione carrello, cambio bottone, back navigation |
 | **Navigation & UX** | 6 | Hamburger menu, logout, reset app state |
 
-### Avanzato
-
-| Suite | Scenari | Cypress Feature |
-|---|---|---|
-| **API Intercept** | 6 | `cy.intercept()` — spy su navigazioni, stub immagini, simulazione risposta lenta |
-| **Visual & DOM** | 7 | `naturalWidth` check immagini, bug `problem_user` documentato, responsive 375px |
-| **Accessibility** | 4 | `cypress-axe` — audit WCAG 2.1 AA su login, catalogo, carrello, checkout |
-| **Session & Auth** | 6 | `cy.getAllLocalStorage()`, auth guard su route protette, `cy.session()` caching |
-| **Performance** | 5 | Timing login per utente, confronto standard vs glitch, `cy.clock()` + `cy.tick()` |
-| **Keyboard Nav** | 4 | `cypress-real-events` — Tab order, login e checkout completabili solo da tastiera |
-
-**Totale: 82 scenari** su 12 suite
+**Totale: 50 scenari** su 6 suite
 
 ---
 
@@ -123,8 +100,7 @@ cy.get('#user-name').type(...)  // ✗ mai nei test
 
 | Command | Descrizione |
 |---|---|
-| `cy.login(user, pass)` | Login completo via UI |
-| `cy.loginBySession(user, pass)` | Login cachato con `cy.session()` — più veloce in suite grandi |
+| `cy.login(user, pass)` | Login completo via UI — visita `/`, compila le credenziali, clicca il bottone |
 
 ### Fixtures
 
@@ -132,6 +108,11 @@ Tutti i dati di test sono separati dalla logica:
 
 - `users.json` — credenziali dei 5 utenti SauceDemo
 - `checkout.json` — dati del form di checkout
+
+### Note implementative
+
+**`navigation.cy.ts` — Reset App State**
+SauceDemo gestisce il reset tramite `localStorage` ma non aggiorna il DOM in modo reattivo: i bottoni `Remove` rimangono visibili finché la pagina non viene ricaricata. Il test che verifica il ritorno dei bottoni `Add to cart` esegue un `cy.reload()` esplicito dopo la chiusura del menu, seguito da `assertLoaded()` per attendere la stabilità della pagina prima dell'asserzione finale.
 
 ---
 
