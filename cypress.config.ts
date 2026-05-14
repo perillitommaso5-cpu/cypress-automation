@@ -9,5 +9,13 @@ export default defineConfig({
     viewportHeight: 720,
     video: false,
     screenshotOnRunFailure: true,
+    // Aumentati per ambienti CI con latenza di rete elevata
+    pageLoadTimeout: 120000,
+    defaultCommandTimeout: 10000,
+    requestTimeout: 15000,
+    responseTimeout: 15000,
+    // cy.session() — riusa la sessione tra test dello stesso spec
+    experimentalMemoryManagement: true,
+    numTestsKeptInMemory: 5,
   },
 });

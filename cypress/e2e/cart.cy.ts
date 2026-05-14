@@ -6,12 +6,11 @@ describe('Cart', () => {
 
   beforeEach(() => {
     cy.fixture('users').then((users) => {
-      LoginPage.login(users.standard.username, users.standard.password);
+      cy.loginBySession(users.standard.username, users.standard.password);
+      cy.visit('/inventory');
       InventoryPage.assertLoaded();
     });
   });
-
-  // ─── Aggiunta prodotti
 
   context('Aggiunta prodotti', () => {
     it('un prodotto aggiunto appare nel carrello', () => {
@@ -36,8 +35,6 @@ describe('Cart', () => {
     });
   });
 
-  // ─── Rimozione prodotti
-
   context('Rimozione prodotti', () => {
     it('rimuovere un prodotto dal carrello aggiorna la lista', () => {
       InventoryPage.addAllItemsToCart();
@@ -53,8 +50,6 @@ describe('Cart', () => {
       CartPage.assertEmpty();
     });
   });
-
-  // ─── Navigazione
 
   context('Navigazione', () => {
     it('"Continue Shopping" riporta al catalogo', () => {

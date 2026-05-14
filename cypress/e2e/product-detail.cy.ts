@@ -1,4 +1,3 @@
-import LoginPage from '../pages/LoginPage';
 import InventoryPage from '../pages/InventoryPage';
 import ProductDetailPage from '../pages/ProductDetailPage';
 
@@ -6,12 +5,11 @@ describe('Product Detail', () => {
 
   beforeEach(() => {
     cy.fixture('users').then((users) => {
-      LoginPage.login(users.standard.username, users.standard.password);
+      cy.loginBySession(users.standard.username, users.standard.password);
+      cy.visit('/inventory');
       InventoryPage.assertLoaded();
     });
   });
-
-  // ─── Contenuto pagina
 
   context('Contenuto', () => {
     it('nome prodotto nel dettaglio corrisponde a quello nel catalogo', () => {
@@ -29,8 +27,6 @@ describe('Product Detail', () => {
       ProductDetailPage.getImage().should('be.visible');
     });
   });
-
-  // ─── Carrello dalla detail page
 
   context('Carrello', () => {
     it('aggiunta al carrello dalla detail page — badge mostra 1', () => {
@@ -53,8 +49,6 @@ describe('Product Detail', () => {
       cy.get('.shopping_cart_badge').should('not.exist');
     });
   });
-
-  // ─── Navigazione
 
   context('Navigazione', () => {
     it('"Back to products" riporta al catalogo', () => {

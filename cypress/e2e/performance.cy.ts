@@ -1,11 +1,6 @@
 import LoginPage from '../pages/LoginPage';
 import InventoryPage from '../pages/InventoryPage';
 
-/**
- * Performance Tests — cy.clock() + timing
- * Misura i tempi di risposta dell'applicazione e confronta
- * il comportamento tra utenti con latenza diversa.
- */
 describe('Performance', () => {
 
   context('Tempo di login', () => {
@@ -67,9 +62,7 @@ describe('Performance', () => {
     it('cy.clock congela il tempo — Date.now() non avanza', () => {
       cy.clock();
       cy.visit('/');
-      const frozenTime = Date.now();
       cy.tick(5000);
-      // Dopo tick(5000) il tempo simulato è avanzato ma il DOM non è bloccato
       cy.get('#login-button').should('be.visible');
       cy.clock().then((clock) => {
         clock.restore();
@@ -82,9 +75,9 @@ describe('Performance', () => {
       cy.fixture('users').then((users) => {
         cy.get('#user-name').type(users.standard.username);
         cy.get('#password').type(users.standard.password);
-        cy.tick(1000); // Simula 1 secondo prima del click
+        cy.tick(1000);
         cy.get('#login-button').click();
-        cy.tick(2000); // Simula 2 secondi durante il caricamento
+        cy.tick(2000);
         cy.url().should('include', '/inventory');
       });
     });

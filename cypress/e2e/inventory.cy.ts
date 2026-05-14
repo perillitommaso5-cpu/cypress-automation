@@ -5,12 +5,11 @@ describe('Inventory', () => {
 
   beforeEach(() => {
     cy.fixture('users').then((users) => {
-      LoginPage.login(users.standard.username, users.standard.password);
+      cy.loginBySession(users.standard.username, users.standard.password);
+      cy.visit('/inventory');
       InventoryPage.assertLoaded();
     });
   });
-
-  // ─── Lista prodotti
 
   context('Lista prodotti', () => {
     it('mostra esattamente 6 prodotti', () => {
@@ -21,8 +20,6 @@ describe('Inventory', () => {
       InventoryPage.assertItemsHaveNameDescriptionPriceImage();
     });
   });
-
-  // ─── Sorting
 
   context('Sorting', () => {
     it('ordina A → Z', () => {
@@ -58,8 +55,6 @@ describe('Inventory', () => {
     });
   });
 
-  // ─── Carrello
-
   context('Aggiunta al carrello', () => {
     it('aggiunge un prodotto — badge mostra 1', () => {
       InventoryPage.addFirstItemToCart();
@@ -77,8 +72,6 @@ describe('Inventory', () => {
       InventoryPage.cartBadgeShouldNotExist();
     });
   });
-
-  // ─── Navigazione
 
   context('Navigazione al dettaglio', () => {
     it('click sul nome prodotto apre la pagina di dettaglio', () => {

@@ -5,12 +5,11 @@ describe('Navigation & UX', () => {
 
   beforeEach(() => {
     cy.fixture('users').then((users) => {
-      LoginPage.login(users.standard.username, users.standard.password);
+      cy.loginBySession(users.standard.username, users.standard.password);
+      cy.visit('/inventory');
       InventoryPage.assertLoaded();
     });
   });
-
-  // ─── Hamburger menu
 
   context('Hamburger menu', () => {
     it('menu si apre al click', () => {
@@ -35,8 +34,6 @@ describe('Navigation & UX', () => {
     });
   });
 
-  // ─── Reset App State
-
   context('Reset App State', () => {
     it('reset svuota il carrello', () => {
       InventoryPage.addAllItemsToCart();
@@ -52,8 +49,6 @@ describe('Navigation & UX', () => {
       cy.get('#react-burger-menu-btn').click();
       cy.get('#reset_sidebar_link').click();
       cy.get('#react-burger-cross-btn').click();
-      // SauceDemo non aggiorna il DOM in modo reattivo dopo il reset:
-      // un reload esplicito garantisce che i bottoni tornino allo stato iniziale.
       cy.reload();
       InventoryPage.assertLoaded();
       cy.get('[data-test^="add-to-cart"]').should('have.length', 6);

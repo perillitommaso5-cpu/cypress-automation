@@ -6,17 +6,15 @@ describe('Visual & DOM Integrity', () => {
   context('Immagini catalogo — standard_user', () => {
     beforeEach(() => {
       cy.fixture('users').then((users) => {
-        LoginPage.login(users.standard.username, users.standard.password);
+        cy.loginBySession(users.standard.username, users.standard.password);
+        cy.visit('/inventory');
         InventoryPage.assertLoaded();
       });
     });
 
     it('nessuna immagine del catalogo è broken', () => {
       cy.get('.inventory_item img').each(($img) => {
-        cy.wrap($img)
-          .should('have.attr', 'src')
-          .and('not.be.empty');
-        // Verifica che l'immagine sia effettivamente caricata (naturalWidth > 0)
+        cy.wrap($img).should('have.attr', 'src').and('not.be.empty');
         cy.wrap($img).should(($el) => {
           expect(($el[0] as HTMLImageElement).naturalWidth).to.be.greaterThan(0);
         });
@@ -33,7 +31,8 @@ describe('Visual & DOM Integrity', () => {
   context('Immagini catalogo — problem_user (immagini rotte attese)', () => {
     it('problem_user vede immagini rotte — comportamento documentato', () => {
       cy.fixture('users').then((users) => {
-        LoginPage.login(users.problem.username, users.problem.password);
+        cy.loginBySession(users.problem.username, users.problem.password);
+        cy.visit('/inventory');
         InventoryPage.assertLoaded();
 
         let brokenCount = 0;
@@ -41,7 +40,6 @@ describe('Visual & DOM Integrity', () => {
           const naturalWidth = ($img[0] as HTMLImageElement).naturalWidth;
           if (naturalWidth === 0) brokenCount++;
         }).then(() => {
-          // problem_user ha tutte le immagini rotte — questo test lo documenta
           cy.log(`Immagini rotte trovate: ${brokenCount}`);
           expect(brokenCount).to.be.greaterThan(0);
         });
@@ -53,7 +51,8 @@ describe('Visual & DOM Integrity', () => {
     beforeEach(() => {
       cy.viewport(375, 812);
       cy.fixture('users').then((users) => {
-        LoginPage.login(users.standard.username, users.standard.password);
+        cy.loginBySession(users.standard.username, users.standard.password);
+        cy.visit('/inventory');
         InventoryPage.assertLoaded();
       });
     });

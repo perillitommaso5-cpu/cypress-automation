@@ -1,27 +1,23 @@
 import LoginPage from '../pages/LoginPage';
 import InventoryPage from '../pages/InventoryPage';
 
-/**
- * Session & Auth Guard Tests
- * Verifica il comportamento dell'app relativamente alla gestione
- * della sessione: persistenza, invalidazione e protezione delle route.
- */
 describe('Session & Auth Guard', () => {
 
   context('Persistenza sessione', () => {
     it('ricaricare la pagina da autenticato mantiene la sessione', () => {
       cy.fixture('users').then((users) => {
-        LoginPage.login(users.standard.username, users.standard.password);
+        cy.loginBySession(users.standard.username, users.standard.password);
+        cy.visit('/inventory');
         InventoryPage.assertLoaded();
         cy.reload();
-        // Dopo reload l'utente deve rimanere autenticato
         InventoryPage.assertLoaded();
       });
     });
 
     it('il localStorage contiene il token di sessione dopo il login', () => {
       cy.fixture('users').then((users) => {
-        LoginPage.login(users.standard.username, users.standard.password);
+        cy.loginBySession(users.standard.username, users.standard.password);
+        cy.visit('/inventory');
         InventoryPage.assertLoaded();
         cy.getAllLocalStorage().then((storage) => {
           const siteStorage = storage[Cypress.config('baseUrl') as string];
@@ -45,7 +41,6 @@ describe('Session & Auth Guard', () => {
 
   context('Auth Guard — protezione route', () => {
     it('accesso diretto a /inventory senza login fa redirect alla login page', () => {
-      // Nessun login — visita diretta alla route protetta
       cy.visit('/inventory');
       cy.url().should('not.include', '/inventory');
       cy.get('#login-button').should('be.visible');
