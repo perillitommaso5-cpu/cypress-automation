@@ -4,9 +4,8 @@ import CheckoutPage from '../pages/CheckoutPage';
 
 function logViolations(violations: Cypress.Violation[]) {
   if (violations.length === 0) return;
-  cy.task('log', `${violations.length} accessibility violation(s) detected`);
   violations.forEach((v) => {
-    cy.task('log', `[${v.impact}] ${v.id}: ${v.description}`);
+    Cypress.log({ name: 'a11y', message: `[${v.impact}] ${v.id}: ${v.description}` });
   });
 }
 
@@ -24,7 +23,9 @@ describe('Accessibility (WCAG 2.1 AA)', () => {
   });
 
   context('Inventory page', () => {
-    beforeEach(() => {
+    before(() => {
+      // Usa before (una volta sola) invece di beforeEach per evitare
+      // page load multipli — injectAxe viene chiamato dentro ogni test.
       cy.fixture('users').then((users) => {
         cy.loginBySession(users.standard.username, users.standard.password);
         InventoryPage.assertLoaded();
@@ -52,7 +53,7 @@ describe('Accessibility (WCAG 2.1 AA)', () => {
   });
 
   context('Checkout page', () => {
-    beforeEach(() => {
+    before(() => {
       cy.fixture('users').then((users) => {
         cy.loginBySession(users.standard.username, users.standard.password);
         InventoryPage.assertLoaded();

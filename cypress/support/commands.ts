@@ -1,9 +1,3 @@
-// Custom Cypress commands
-
-/**
- * cy.login(username, password)
- * Performs a full UI login.
- */
 Cypress.Commands.add('login', (username: string, password: string) => {
   cy.visit('/');
   cy.get('#user-name').type(username);
@@ -13,10 +7,10 @@ Cypress.Commands.add('login', (username: string, password: string) => {
 });
 
 /**
- * cy.loginBySession(username, password)
- * Fast login using cy.session() — caches authenticated cookies/localStorage.
- * validate() checks the URL instead of localStorage to avoid Cypress context issues.
- * After this command the browser is already on /inventory.
+ * cy.loginBySession() — esegue il login UI una volta sola per spec file.
+ * cy.session() ripristina localStorage + cookies tra i test senza rieseguire il flusso.
+ * Dopo questa chiamata il browser è su / e SauceDemo fa il redirect a /inventory.
+ * NON usare cy.visit('/inventory') dopo — non è una route servita dal server.
  */
 Cypress.Commands.add('loginBySession', (username: string, password: string) => {
   cy.session(
@@ -27,17 +21,13 @@ Cypress.Commands.add('loginBySession', (username: string, password: string) => {
       cy.get('#password').type(password);
       cy.get('#login-button').click();
       cy.url().should('include', '/inventory');
-    },
-    {
-      validate() {
-        // Visit '/' — SauceDemo redirects to /inventory if session is valid,
-        // stays on login page if not. This is the only reliable check.
-        cy.visit('/');
-        cy.url().should('include', '/inventory');
-      },
-      cacheAcrossSpecs: false,
     }
+    // Nessun validate() — SauceDemo non invalida la sessione durante la suite.
+    // Il setup viene eseguito una volta sola; il ripristino avviene tramite
+    // localStorage snapshot che cy.session() salva automaticamente.
   );
+  // Dopo il ripristino della sessione naviga a / per triggerare il redirect.
+  cy.visit('/');
 });
 
 declare global {
