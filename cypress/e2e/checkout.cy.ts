@@ -1,3 +1,4 @@
+import LoginPage from '../pages/LoginPage';
 import InventoryPage from '../pages/InventoryPage';
 import CartPage from '../pages/CartPage';
 import CheckoutPage from '../pages/CheckoutPage';
@@ -6,7 +7,7 @@ describe('Checkout', () => {
 
   beforeEach(() => {
     cy.fixture('users').then((users) => {
-      cy.loginBySession(users.standard.username, users.standard.password);
+      LoginPage.login(users.standard.username, users.standard.password);
       InventoryPage.assertLoaded();
       InventoryPage.addFirstItemToCart();
       InventoryPage.goToCart();
@@ -14,6 +15,8 @@ describe('Checkout', () => {
       CheckoutPage.assertStepOneLoaded();
     });
   });
+
+  // ─── Validazione form
 
   context('Validazione form', () => {
     it('tutti i campi vuoti — errore "First Name is required"', () => {
@@ -47,6 +50,8 @@ describe('Checkout', () => {
       });
     });
   });
+
+  // ─── Flusso completo
 
   context('Flusso completo', () => {
     it('dati validi — avanza allo step 2 con riepilogo ordine', () => {
@@ -87,6 +92,8 @@ describe('Checkout', () => {
       });
     });
   });
+
+  // ─── Cancel
 
   context('Cancel', () => {
     it('cancel dallo step 1 riporta al carrello', () => {
