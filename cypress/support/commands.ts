@@ -8,9 +8,12 @@ Cypress.Commands.add('login', (username: string, password: string) => {
 
 /**
  * cy.loginBySession() — esegue il login UI una volta sola per spec file.
- * cy.session() ripristina localStorage + cookies tra i test senza rieseguire il flusso.
- * Dopo questa chiamata il browser è su / e SauceDemo fa il redirect a /inventory.
- * NON usare cy.visit('/inventory') dopo — non è una route servita dal server.
+ *
+ * Perché serve cy.reload():
+ * cy.session() ripristina il localStorage DOPO che cy.visit('/') ha già
+ * caricato la pagina. SauceDemo legge session-username al mount dell'app —
+ * se il localStorage arriva tardi, non fa il redirect. Il reload forza
+ * SauceDemo a rileggere il localStorage già popolato da Cypress.
  */
 Cypress.Commands.add('loginBySession', (username: string, password: string) => {
   cy.session(
@@ -22,12 +25,10 @@ Cypress.Commands.add('loginBySession', (username: string, password: string) => {
       cy.get('#login-button').click();
       cy.url().should('include', '/inventory');
     }
-    // Nessun validate() — SauceDemo non invalida la sessione durante la suite.
-    // Il setup viene eseguito una volta sola; il ripristino avviene tramite
-    // localStorage snapshot che cy.session() salva automaticamente.
   );
-  // Dopo il ripristino della sessione naviga a / per triggerare il redirect.
   cy.visit('/');
+  cy.reload();
+  cy.url().should('include', '/inventory');
 });
 
 declare global {
